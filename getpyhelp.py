@@ -4,9 +4,24 @@ import pkgutil
 from colorama import Fore, Style, init
 
 # Initialize colorama
-init()
+init(autoreset=True)
 
 def get_help(item, switch, debug=False, filter_letter=None):
+    """
+    Provides detailed help information for a given item based on the specified switch.
+    Parameters:
+    item (str): The item for which help is requested. This can be a module, class, function, or method name.
+    switch (str): The type of help to display. Options include:
+        - "show_all_modules": Displays all installed modules, optionally filtered by the starting letter.
+        - "show_methods": Displays methods of the specified item.
+        - "show_functions": Displays functions of the specified item or help for a callable item.
+        - "show_dunders": Displays dunder (double underscore) methods of the specified item.
+        - "show_class": Displays class details of the specified item.
+    debug (bool, optional): If True, prints debug information. Default is False.
+    filter_letter (str, optional): If provided, filters the list of modules to only those starting with this letter. Only applicable when switch is "show_all_modules".
+    Returns:
+    None
+    """
     def display_and_select(items):
         for i, item in enumerate(items, 1):
             print(f"{Fore.GREEN}{i}. {Fore.CYAN}{item}{Style.RESET_ALL}")
@@ -127,6 +142,28 @@ def get_help(item, switch, debug=False, filter_letter=None):
         help(obj)
 
 if __name__ == "__main__":
+    """
+    Command-line interface for the get_help function.
+
+    This script allows users to get detailed help information for Python modules, classes, functions, and methods.
+
+    Usage:
+        python getpyhelp.py [item] [options]
+
+    Arguments:
+        item: The item to look up (optional).
+
+    Options:
+        -h, --help                Show this help message and exit.
+        --debug                   Enable debug logging.
+        -am, --show_all_modules   Show all Python modules installed.
+        -fm, --show_filtered_modules <letter>
+                                  Show all Python modules starting with a letter.
+        -c, --show_class          Show the entire class details.
+        -d, --show_dunders        Look up dunder methods (__methods__).
+        -f, --show_functions      Look up functions in a class.
+        -m, --show_methods        Look up methods in a class.
+    """
     parser = argparse.ArgumentParser(description="Get Python help on methods, functions, dunders, or the entire class.")
     parser.add_argument("item", nargs="?", help="The item to look up", default=None)
 
@@ -160,4 +197,4 @@ if __name__ == "__main__":
     elif args.show_class:
         get_help(args.item, "show_class", debug=args.debug)
     else:
-        print("Please type python gethelp.py -h for more information")
+        print("Please type python getpyhelp.py -h for more information")
