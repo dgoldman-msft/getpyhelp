@@ -11,32 +11,25 @@ This helper script will allow you to import modules, dump methods, functions and
 
 ### Examples
 
-- EXAMPLE
+usage: gethelp.py [-h] [--debug] [-am] [-fm SHOW_FILTERED_MODULES] [-c] [-d] [-f] [-m] [item]
 
-    python getpyhelp.py
-    usage: getpyhelp.py [-h] [-m] [-f] [-d] [-c] [--debug] item
-    getpyhelp.py: error: the following arguments are required: item
+Get Python help on methods, functions, dunders, or the entire class.
 
-- EXAMPLE
+positional arguments:
+  item                  The item to look up
 
-    python getpyhelp.py str -m
+options:
+  -h, --help            show this help message and exit
+  -c, --show_class      Show the entire class details
+  -d, --show_dunders    Look up dunder methods (__methods__)
+  -f, --show_functions  Look up functions in a class
+  -m, --show_methods    Look up methods in a class
 
-    Display all string methods
+Debug options:
+  --debug               Enable debug logging
 
-- EXAMPLE
-
-    python getpyhelp.py str -f
-
-    Display all string functions
-
-- EXAMPLE
-
-    python getpyhelp.py str -d
-
-    Display all string dunders
-
-- EXAMPLE
-
-    python getpyhelp.py str -c
-
-    Display string class object (full help)
+Module options:
+  -am, --show_all_modules
+                        Show all Python modules installed
+  -fm SHOW_FILTERED_MODULES, --show_filtered_modules SHOW_FILTERED_MODULES
+                        Show all Python modules starting with a letter
