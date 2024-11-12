@@ -19,17 +19,22 @@ positional arguments:
   item                  The item to look up
 
 options:
-  -h, --help            show this help message and exit
-  -c, --show_class      Show the entire class details
-  -d, --show_dunders    Look up dunder methods (__methods__)
-  -f, --show_functions  Look up functions in a class
-  -m, --show_methods    Look up methods in a class
+    -c,     --show_class                        Show the entire class details.
+    -d,     --show_special_methods              Look up special methods (__methods__).
+    -dbg    --debug                             Enable debug logging.
+    -h,     --help                              Show this help message and exit.
+    -f,     --show_functions                    Look up functions in a class.
+    -m,     --show_methods                      Look up methods in a class.
 
 Debug options:
-  --debug               Enable debug logging
+    -dbg    --debug                             Enable debug logging
 
 Module options:
-  -am, --show_all_modules
-                        Show all Python modules installed
-  -fm SHOW_FILTERED_MODULES, --show_filtered_modules SHOW_FILTERED_MODULES
-                        Show all Python modules starting with a letter
+    -am,    --show_all_modules                  Show all Python modules installed.
+    -fm,    --show_filtered_modules <letter>    Show all Python modules starting with a letter.
+
+
+NOTE: If you want to run this as an override function you can do the following:
+1. Edit your .bashrc or .zshrc file where you have your aliases defined.
+2. Add --> alias youralias='python3 ~/scripts/getpyhelp.py'
+3. Source your profile file.

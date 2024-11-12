@@ -6,6 +6,29 @@ from colorama import Fore, Style, init
 # Initialize colorama
 init(autoreset=True)
 
+def display_and_select(items):
+    """
+    Displays a list of items and prompts the user to select one.
+
+    Parameters:
+    items (list): A list of items to display.
+
+    Returns:
+    str: The selected item from the list, or None if the selection is invalid.
+    """
+    for i, item in enumerate(items, 1):
+        print(f"{Fore.GREEN}{i}. {Fore.CYAN}{item}{Style.RESET_ALL}")
+    try:
+        choice = int(input("\nEnter the number of the item for which you want more details: "))
+        if 1 <= choice <= len(items):
+            return items[choice - 1]
+        else:
+            print(f"{Fore.RED}Invalid choice. Please enter a number between 1 and {len(items)}.{Style.RESET_ALL}")
+            return None
+    except ValueError:
+        print(f"{Fore.RED}Invalid input. Please enter a valid number.{Style.RESET_ALL}")
+        return None
+
 def get_help(item, switch, debug=False, filter_letter=None):
     """
     Provides detailed help information for a given item based on the specified switch.
@@ -14,38 +37,18 @@ def get_help(item, switch, debug=False, filter_letter=None):
     switch (str): The type of help to display. Options include:
         - "show_all_modules": Displays all installed modules, optionally filtered by the starting letter.
         - "show_methods": Displays methods of the specified item.
-        - "show_functions": Displays functions of the specified item or help for a callable item.
-        - "show_dunders": Displays dunder (double underscore) methods of the specified item.
+        - "show_special_methods": Displays special (double underscore) methods of the specified item.
         - "show_class": Displays class details of the specified item.
     debug (bool, optional): If True, prints debug information. Default is False.
     filter_letter (str, optional): If provided, filters the list of modules to only those starting with this letter. Only applicable when switch is "show_all_modules".
     Returns:
     None
     """
-    def display_and_select(items):
-        for i, item in enumerate(items, 1):
-            print(f"{Fore.GREEN}{i}. {Fore.CYAN}{item}{Style.RESET_ALL}")
-        try:
-            choice = int(input("\nEnter the number of the item for which you want more details: "))
-            if 1 <= choice <= len(items):
-                return items[choice - 1]
-            else:
-                print(f"{Fore.RED}Invalid choice. Please enter a number between 1 and {len(items)}.{Style.RESET_ALL}")
-                return None
-        except ValueError:
-            print(f"{Fore.RED}Invalid input. Please enter a valid number.{Style.RESET_ALL}")
-            return None
-
     if switch == "show_all_modules":
         print(f"{Fore.YELLOW}Installed modules:{Style.RESET_ALL}")
         modules = sorted([module.name for module in pkgutil.iter_modules()])
         if filter_letter:
             modules = [module for module in modules if module.startswith(filter_letter)]
-
-        # Print modules in a numbered list
-        for i, module in enumerate(modules, 1):
-            print(f"{Fore.CYAN}{i}. {Fore.YELLOW}{module}{Style.RESET_ALL}")
-        print()  # New line after printing all modules
 
         selected_module = display_and_select(modules)
         if selected_module:
@@ -54,33 +57,34 @@ def get_help(item, switch, debug=False, filter_letter=None):
         return
 
     if debug:
-        print(f"Trying to get help for item: {item}")
+        print(f"{Fore.RED}Trying to get help for item: {item}{Style.RESET_ALL}")
     obj = None
 
     try:
         # Attempt to evaluate item directly
         if debug:
-            print(f"{Fore.RED}Evaluating {item}")
+            print(f"{Fore.RED}Evaluating {item}{Style.RESET_ALL}")
         obj = eval(item)
         if debug:
-            print(f"{Fore.RED}Evaluated {item} successfully. Object: {obj}")
+            print(f"{Fore.RED}Evaluated {item} successfully. Object: {obj}{Style.RESET_ALL}")
     except (NameError, SyntaxError):
         if debug:
-            print(f"{Fore.RED}Evaluation failed for {item}. Trying to import as module.")
+            print(f"{Fore.RED}Evaluation failed for {item}. Trying to import as module.{Style.RESET_ALL}")
         try:
             # If eval fails, try importing the item as a module
             module_name, _, attr_name = item.partition('.')
             if debug:
                 print(f"{Fore.RED}Importing module {module_name}")
             module = importlib.import_module(module_name)
+
             if debug:
-                print(f"{Fore.GREEN}Imported module {module_name} successfully.")
+                print(f"{Fore.GREEN}Imported module {module_name} successfully.{Style.RESET_ALL}")
             if attr_name:
                 if debug:
                     print(f"{Fore.RED}Getting attribute {attr_name} from module {module_name}")
                 obj = getattr(module, attr_name)
                 if debug:
-                    print(f"{Fore.GREEN}Retrieved attribute {attr_name}. Object: {obj}")
+                    print(f"{Fore.GREEN}Retrieved attribute {attr_name}. Object: {obj}{Style.RESET_ALL}")
             else:
                 obj = module
         except ImportError as e:
@@ -125,13 +129,13 @@ def get_help(item, switch, debug=False, filter_letter=None):
                 else:
                     print(f"{Fore.RED}No description available{Style.RESET_ALL}")
 
-    elif switch == "show_dunders":
-        print(f"{Fore.YELLOW}Dunder methods for {item}:{Style.RESET_ALL}")
-        dunders = [method for method in dir(obj) if method.startswith('__')]
-        selected_dunder = display_and_select(dunders)
-        if selected_dunder:
-            print(f"{Fore.YELLOW}\nDetailed help for dunder method {selected_dunder}:{Style.RESET_ALL}")
-            doc_string = getattr(obj, selected_dunder).__doc__
+    elif switch == "show_special_methods":
+        print(f"{Fore.YELLOW}Special methods for {item}:{Style.RESET_ALL}")
+        special_methods = [method for method in dir(obj) if method.startswith('__')]
+        selected_special_method = display_and_select(special_methods)
+        if selected_special_method:
+            print(f"{Fore.YELLOW}\nDetailed help for special method {selected_special_method}:{Style.RESET_ALL}")
+            doc_string = getattr(obj, selected_special_method).__doc__
             if doc_string:
                 print(f"{Fore.CYAN}{doc_string}{Style.RESET_ALL}")
             else:
@@ -147,29 +151,27 @@ if __name__ == "__main__":
 
     This script allows users to get detailed help information for Python modules, classes, functions, and methods.
 
-    Usage:
         python getpyhelp.py [item] [options]
 
     Arguments:
         item: The item to look up (optional).
 
     Options:
-        -h, --help                Show this help message and exit.
-        --debug                   Enable debug logging.
-        -am, --show_all_modules   Show all Python modules installed.
-        -fm, --show_filtered_modules <letter>
-                                  Show all Python modules starting with a letter.
-        -c, --show_class          Show the entire class details.
-        -d, --show_dunders        Look up dunder methods (__methods__).
-        -f, --show_functions      Look up functions in a class.
-        -m, --show_methods        Look up methods in a class.
+        -am,    --show_all_modules                  Show all Python modules installed.
+        -c,     --show_class                        Show the entire class details.
+        -fm,    --show_filtered_modules <letter>    Show all Python modules starting with a letter.
+        -d,     --show_special_methods              Look up special methods (__methods__).
+        -dbg    --debug                             Enable debug logging.
+        -h,     --help                              Show this help message and exit.
+        -f,     --show_functions                    Look up functions in a class.
+        -m,     --show_methods                      Look up methods in a class.
     """
     parser = argparse.ArgumentParser(description="Get Python help on methods, functions, dunders, or the entire class.")
     parser.add_argument("item", nargs="?", help="The item to look up", default=None)
 
     # Debug section
     debug_group = parser.add_argument_group('Debug options')
-    debug_group.add_argument("--debug", action="store_true", help="Enable debug logging")
+    debug_group.add_argument("-dbg", "--debug", action="store_true", help="Enable debug logging")
 
     # Module section
     module_group = parser.add_argument_group('Module options')
@@ -178,7 +180,7 @@ if __name__ == "__main__":
 
     # Other options
     parser.add_argument("-c", "--show_class", action="store_true", help="Show the entire class details")
-    parser.add_argument("-d", "--show_dunders", action="store_true", help="Look up dunder methods (__methods__)")
+    parser.add_argument("-d", "--show_special_methods", action="store_true", help="Look up special 'Dunder' methods (__methods__)")
     parser.add_argument("-f", "--show_functions", action="store_true", help="Look up functions in a class")
     parser.add_argument("-m", "--show_methods", action="store_true", help="Look up methods in a class")
 
@@ -192,8 +194,8 @@ if __name__ == "__main__":
         get_help(args.item, "show_methods", debug=args.debug)
     elif args.show_functions:
         get_help(args.item, "show_functions", debug=args.debug)
-    elif args.show_dunders:
-        get_help(args.item, "show_dunders", debug=args.debug)
+    elif args.show_special_methods:
+        get_help(args.item, "show_special_methods", debug=args.debug)
     elif args.show_class:
         get_help(args.item, "show_class", debug=args.debug)
     else:
